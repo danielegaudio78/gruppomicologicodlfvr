@@ -1,1 +1,3 @@
 FROM php:8.2-apache
+RUN sed -i 's|/var/www/html|/var/www/html/circolo-micologico-php|g' /etc/apache2/sites-available/000-default.conf
+WORKDIR /var/www/html
