@@ -1,0 +1,45 @@
+# Esempio di configurazione nginx equivalente ai file .htaccess del progetto.
+# Da adattare (percorsi, versione PHP-FPM) e incollare nel blocco server{}
+# del tuo sito. Necessario SOLO se l'hosting usa nginx invece di Apache:
+# i file .htaccess presenti nelle sottocartelle vengono ignorati da nginx.
+
+server {
+    # ... la tua configurazione esistente (listen, server_name, ssl, root, ecc.) ...
+
+    root /percorso/al/sito/circolo-micologico-php;
+    index index.php;
+
+    # Blocca l'accesso diretto alle cartelle sensibili: foto, PDF, database
+    # e file inclusi sono raggiungibili solo attraverso gli script PHP
+    # (serve_image.php, serve_pdf.php) e non vanno mai serviti come file statici.
+    location ~ ^/(uploads|db|includes)/ {
+        deny all;
+        return 404;
+    }
+
+    # Impedisce l'esecuzione di install.php se qualcuno dimentica di
+    # eliminarlo dopo la configurazione iniziale: rimuovi questo blocco
+    # SOLO durante il primo avvio, poi rimettilo (o elimina il file).
+    # location = /install.php { deny all; return 404; }
+
+    # Pagina 404 personalizzata, coerente con il resto del sito
+    error_page 404 /404.php;
+
+    location / {
+        try_files $uri $uri/ /index.php?$query_string;
+    }
+
+    location ~ \.php$ {
+        include fastcgi_params;
+        fastcgi_pass unix:/run/php/php8.3-fpm.sock;  # adatta alla versione PHP del tuo hosting
+        fastcgi_param SCRIPT_FILENAME $document_root$fastcgi_script_name;
+    }
+
+    # Intestazioni di sicurezza generali (equivalenti a quelle in .htaccess)
+    add_header X-Content-Type-Options "nosniff";
+    add_header X-Frame-Options "SAMEORIGIN";
+    add_header Referrer-Policy "strict-origin-when-cross-origin";
+
+    # Limiti di upload coerenti con MAX_FOTO_MB / MAX_PDF_MB in includes/config.php
+    client_max_body_size 60M;
+}

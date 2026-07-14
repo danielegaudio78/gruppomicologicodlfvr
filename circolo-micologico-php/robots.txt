@@ -1,0 +1,21 @@
+User-agent: *
+Disallow: /admin/
+Disallow: /uploads/
+Disallow: /db/
+Disallow: /includes/
+Disallow: /install.php
+Disallow: /soci/
+Disallow: /serve_galleria_soci_foto.php
+Allow: /
+
+# Le fotografie pubbliche sono servite da questi script (non dalla cartella
+# uploads/, che resta bloccata): sono volutamente indicizzabili da Google.
+Allow: /serve_image.php
+Allow: /serve_slide.php
+Allow: /serve_consiglio_foto.php
+Allow: /serve_evento_immagine.php
+Allow: /serve_ricetta_foto.php
+Allow: /serve_chi_siamo_foto.php
+
+Sitemap: https://www.circolosottobosco.it/sitemap.php
+Sitemap: https://www.circolosottobosco.it/sitemap-immagini.php
